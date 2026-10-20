@@ -582,6 +582,15 @@ mod provider_preset_tests {
             preset.api_key = "fixture-key".into();
             let state = test_app_state();
             write_providers(&state, &[preset.clone()]).unwrap();
+            // Selecting MiniMax starts from its first ordinary choice; the
+            // application's unrelated global fallback remains unchanged.
+            write_selection(&state, &ModelSelection {
+                active: Some(ModelRef {
+                    provider_id: preset.id.clone(),
+                    model: preset.model_choices()[0].clone(),
+                }),
+                ..ModelSelection::default()
+            }).unwrap();
             let default_model = default_session_model(&state).unwrap();
             assert_eq!(default_model.model, "MiniMax-M3.1-Flash");
             for model in [default_model.model.as_str(), "MiniMax-M3", "MiniMax-M2.7", "custom-model"] {
